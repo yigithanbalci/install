@@ -10,7 +10,6 @@ log_info "Installing Window Managers..."
 
 install_aerospace() {
   if is_installed aerospace; then return 0; fi
-  if ! confirm_install "AeroSpace (macOS tiling WM)"; then return 0; fi
   
   case "$OS" in
     macos)
@@ -27,7 +26,6 @@ install_aerospace() {
 
 install_yabai() {
   if is_installed yabai; then return 0; fi
-  if ! confirm_install "yabai (macOS tiling WM)"; then return 0; fi
   
   case "$OS" in
     macos)
@@ -44,7 +42,6 @@ install_yabai() {
 
 install_skhd() {
   if is_installed skhd; then return 0; fi
-  if ! confirm_install "skhd (macOS hotkey daemon)"; then return 0; fi
   
   case "$OS" in
     macos)
@@ -59,8 +56,7 @@ install_skhd() {
   esac
 }
 
-install_hyprland_components() {
-  if ! confirm_install "Hyprland components (waybar, hyprpaper, hyprlock)"; then return 0; fi
+install_hyprland() {
   
   case "$OS" in
     arch)
@@ -90,15 +86,26 @@ main() {
   case "$OS" in
     macos)
       log_info "Installing macOS window managers..."
-      install_aerospace
       
-      # Optional: Uncomment if you want to offer yabai/skhd
-      # install_yabai
-      # install_skhd
+      # Install based on config
+      if confirm_install "aerospace" "wm"; then
+        install_aerospace || log_warning "Failed to install aerospace"
+      fi
+      
+      if confirm_install "yabai" "wm"; then
+        install_yabai || log_warning "Failed to install yabai"
+      fi
+      
+      if confirm_install "skhd" "wm"; then
+        install_skhd || log_warning "Failed to install skhd"
+      fi
       ;;
     arch)
       log_info "Installing Linux window manager components..."
-      install_hyprland_components
+      
+      if confirm_install "hyprland" "wm"; then
+        install_hyprland || log_warning "Failed to install Hyprland components"
+      fi
       ;;
     ubuntu)
       log_warning "No window managers configured for Ubuntu"

@@ -246,7 +246,8 @@ main() {
   )
   
   for tool in "${tools_to_install[@]}"; do
-    if confirm_install "$tool"; then
+    # Pass category name to confirm_install for config support
+    if confirm_install "$tool" "cli"; then
       if "install_$tool"; then
         log_success "$tool installed"
       else

@@ -127,14 +127,41 @@ curl_install_with_args() {
   fi
 }
 
-# Confirm before installation (respects INSTALL_NONINTERACTIVE)
+# Confirm before installation (respects INSTALL_NONINTERACTIVE and config)
 confirm_install() {
   local program="$1"
+  local category="${2:-}"
   
+  # If config is loaded, check config setting
+  if [[ "${INSTALL_CONFIG_LOADED:-0}" == "1" ]] && [[ -n "$category" ]]; then
+    # Normalize program name for env var (uppercase, replace - with _)
+    local prog_normalized=$(echo "$program" | tr '[:lower:]' '[:upper:]' | tr '-' '_')
+    local cat_normalized=$(echo "$category" | tr '[:lower:]' '[:upper:]' | tr '-' '_')
+    
+    # Check category first
+    local category_var="INSTALL_CATEGORY_${cat_normalized}"
+    if [[ "${!category_var:-1}" == "0" ]]; then
+      log_skip "Category $category is disabled in config"
+      return 1
+    fi
+    
+    # Check specific tool
+    local tool_var="INSTALL_${cat_normalized}_${prog_normalized}"
+    if [[ -n "${!tool_var}" ]] && [[ "${!tool_var}" == "0" ]]; then
+      log_skip "$program is disabled in config"
+      return 1
+    fi
+    
+    # If config enabled or not specified, install
+    return 0
+  fi
+  
+  # Non-interactive mode
   if [[ "${INSTALL_NONINTERACTIVE:-0}" == "1" ]]; then
     return 0
   fi
   
+  # Interactive prompt
   read -p "Install $program? (Y/n) " -n 1 -r
   echo
   if [[ $REPLY =~ ^[Nn]$ ]]; then

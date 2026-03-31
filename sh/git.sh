@@ -10,7 +10,6 @@ log_info "Installing Git Tools..."
 
 install_gh() {
   if is_installed gh; then return 0; fi
-  if ! confirm_install "GitHub CLI (gh)"; then return 0; fi
   
   case "$OS" in
     macos)
@@ -41,7 +40,6 @@ install_gh() {
 
 install_glab() {
   if is_installed glab; then return 0; fi
-  if ! confirm_install "GitLab CLI (glab)"; then return 0; fi
   
   case "$OS" in
     macos)
@@ -73,7 +71,13 @@ main() {
   )
   
   for tool in "${tools[@]}"; do
-    "install_$tool" || log_warning "Failed to install $tool"
+    if confirm_install "$tool" "git"; then
+      if "install_$tool"; then
+        log_success "$tool installed"
+      else
+        log_error "Failed to install $tool"
+      fi
+    fi
   done
   
   log_success "Git tools installation complete!"
