@@ -4,24 +4,30 @@
 
 ```bash
 # Config-based (recommended)
-./sh/install-with-config.sh              # Install using config
-./sh/install-with-config.sh --dry-run    # Preview what will install
+./sh/install-with-config.sh                    # Use config.zsh
+./sh/install-with-config.sh --dry-run          # Preview
+
+# Override config with flags ✨ NEW!
+./sh/install-with-config.sh cli git            # Only install cli and git
+./sh/install-with-config.sh --exclude devops   # Use config, skip devops
+./sh/install-with-config.sh -e docker -e ai    # Exclude multiple
+./sh/install-with-config.sh --only cli         # Only CLI tools
 
 # Edit config
-nano sh/config.zsh                       # Edit preferences
+nano sh/config.zsh                             # Edit preferences
 
 # Interactive (original)
-./sh/install.sh                          # Interactive menu
-./sh/install.sh cli                      # Install CLI tools
-./sh/install.sh --all                    # Install everything
+./sh/install.sh                                # Interactive menu
+./sh/install.sh cli                            # Install CLI tools
+./sh/install.sh --all                          # Install everything
 
 # Non-interactive (all-or-nothing)
 INSTALL_NONINTERACTIVE=1 ./sh/install.sh --all
 
 # Individual categories
-./sh/cli.sh                              # CLI tools only
-./sh/git.sh                              # Git tools only
-./sh/wm.sh                               # Window managers only
+./sh/cli.sh                                    # CLI tools only
+./sh/git.sh                                    # Git tools only
+./sh/wm.sh                                     # Window managers only
 ```
 
 ---
@@ -86,6 +92,18 @@ nano sh/config.zsh
 ./sh/install-with-config.sh
 ```
 
+### **Override Config with Flags** ✨ NEW!
+```bash
+# Install only specific categories (ignore config)
+./sh/install-with-config.sh cli git
+
+# Use config, but exclude specific tools
+./sh/install-with-config.sh --exclude devops
+
+# Multiple excludes
+./sh/install-with-config.sh -e devops -e ai -e docker
+```
+
 ### **Add New Tool**
 ```bash
 # 1. Add to config
@@ -119,17 +137,36 @@ nano sh/config.zsh
 ## **Decision Priority**
 
 ```
-1. Category disabled?     → Skip all tools in category
-2. Tool disabled?         → Skip that tool
-3. Tool enabled/default?  → Install
+1. CLI flags              → Highest priority (overrides everything)
+2. Config file            → Second priority  
+3. Tool disabled?         → Skip that tool
+4. Tool enabled/default?  → Install
 ```
 
-**Example:**
+**Examples:**
+
+**Flag Override:**
+```bash
+# Config says: cli=0, git=1
+./sh/install-with-config.sh cli
+
+# Result: Installs cli (flag overrides config!)
+```
+
+**Exclude Override:**
+```bash
+# Config says: cli=1, git=1, devops=1
+./sh/install-with-config.sh --exclude devops
+
+# Result: cli and git installed, devops skipped
+```
+
+**Category vs Tool:**
 ```zsh
 INSTALL_CATEGORIES=([cli]=0)   # Category OFF
 CLI_TOOLS=([ripgrep]=1)        # Tool ON
 
-Result: ripgrep NOT installed (category overrides)
+Result: ripgrep NOT installed (category overrides tool)
 ```
 
 ```zsh

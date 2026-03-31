@@ -227,58 +227,84 @@ is_tool_enabled() {
 
 # Export for use in bash scripts
 export_config() {
-  # Export categories
+  # Export categories (convert hyphens to underscores)
   for category tool in "${(@kv)INSTALL_CATEGORIES}"; do
-    export "INSTALL_CATEGORY_${category:u}=$tool"
+    local cat_normalized="${category:u}"
+    cat_normalized="${cat_normalized//-/_}"  # Replace hyphens with underscores
+    export "INSTALL_CATEGORY_${cat_normalized}=$tool"
   done
   
-  # Export all tool configs
+  # Export all tool configs (convert hyphens to underscores)
   for tool enabled in "${(@kv)CLI_TOOLS}"; do
-    export "INSTALL_CLI_${tool:u}=$enabled"
+    local tool_normalized="${tool:u}"
+    tool_normalized="${tool_normalized//-/_}"
+    export "INSTALL_CLI_${tool_normalized}=$enabled"
   done
   
   for tool enabled in "${(@kv)LANGS}"; do
-    export "INSTALL_LANG_${tool:u}=$enabled"
+    local tool_normalized="${tool:u}"
+    tool_normalized="${tool_normalized//-/_}"
+    export "INSTALL_LANG_${tool_normalized}=$enabled"
   done
   
   for tool enabled in "${(@kv)EDITORS}"; do
-    export "INSTALL_EDITOR_${tool:u}=$enabled"
+    local tool_normalized="${tool:u}"
+    tool_normalized="${tool_normalized//-/_}"
+    export "INSTALL_EDITOR_${tool_normalized}=$enabled"
   done
   
   for tool enabled in "${(@kv)SHELLS}"; do
-    export "INSTALL_SHELL_${tool:u}=$enabled"
+    local tool_normalized="${tool:u}"
+    tool_normalized="${tool_normalized//-/_}"
+    export "INSTALL_SHELL_${tool_normalized}=$enabled"
   done
   
   for tool enabled in "${(@kv)TERMINALS}"; do
-    export "INSTALL_TERMINAL_${tool:u}=$enabled"
+    local tool_normalized="${tool:u}"
+    tool_normalized="${tool_normalized//-/_}"
+    export "INSTALL_TERMINAL_${tool_normalized}=$enabled"
   done
   
   for tool enabled in "${(@kv)TERMINAL_TOOLS}"; do
-    export "INSTALL_TERMINAL_TOOL_${tool:u}=$enabled"
+    local tool_normalized="${tool:u}"
+    tool_normalized="${tool_normalized//-/_}"
+    export "INSTALL_TERMINAL_TOOL_${tool_normalized}=$enabled"
   done
   
   for tool enabled in "${(@kv)DEVOPS_TOOLS}"; do
-    export "INSTALL_DEVOPS_${tool:u}=$enabled"
+    local tool_normalized="${tool:u}"
+    tool_normalized="${tool_normalized//-/_}"
+    export "INSTALL_DEVOPS_${tool_normalized}=$enabled"
   done
   
   for tool enabled in "${(@kv)BUILD_TOOLS}"; do
-    export "INSTALL_BUILD_${tool:u}=$enabled"
+    local tool_normalized="${tool:u}"
+    tool_normalized="${tool_normalized//-/_}"
+    export "INSTALL_BUILD_${tool_normalized}=$enabled"
   done
   
   for tool enabled in "${(@kv)SHELL_UTILS}"; do
-    export "INSTALL_SHELL_UTIL_${tool:u}=$enabled"
+    local tool_normalized="${tool:u}"
+    tool_normalized="${tool_normalized//-/_}"
+    export "INSTALL_SHELL_UTIL_${tool_normalized}=$enabled"
   done
   
   for tool enabled in "${(@kv)AI_TOOLS}"; do
-    export "INSTALL_AI_${tool:u}=$enabled"
+    local tool_normalized="${tool:u}"
+    tool_normalized="${tool_normalized//-/_}"
+    export "INSTALL_AI_${tool_normalized}=$enabled"
   done
   
   for tool enabled in "${(@kv)GIT_TOOLS}"; do
-    export "INSTALL_GIT_${tool:u}=$enabled"
+    local tool_normalized="${tool:u}"
+    tool_normalized="${tool_normalized//-/_}"
+    export "INSTALL_GIT_${tool_normalized}=$enabled"
   done
   
   for tool enabled in "${(@kv)WM_TOOLS}"; do
-    export "INSTALL_WM_${tool:u}=$enabled"
+    local tool_normalized="${tool:u}"
+    tool_normalized="${tool_normalized//-/_}"
+    export "INSTALL_WM_${tool_normalized}=$enabled"
   done
   
   # Signal that config is loaded

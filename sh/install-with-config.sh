@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 #
-# Config-based installer wrapper
-# Loads config.zsh and runs installations based on config settings
+# Config-based installer with flag overrides
+# Loads config.zsh as defaults, CLI flags override config
 #
 # Usage:
-#   ./install-with-config.sh              # Use config.zsh settings
-#   ./install-with-config.sh --dry-run    # Preview what would be installed
+#   ./install-with-config.sh                    # Use config.zsh settings
+#   ./install-with-config.sh cli langs          # Override: only install these
+#   ./install-with-config.sh --exclude docker   # Override: exclude docker
+#   ./install-with-config.sh --only cli         # Override: only CLI category
+#   ./install-with-config.sh --dry-run          # Preview
 
 set -euo pipefail
 
@@ -28,6 +31,9 @@ log_warning() { echo -e "${YELLOW}[WARNING]${NC} $*"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $*"; }
 
 DRY_RUN=0
+EXCLUDE_CATEGORIES=()
+ONLY_CATEGORIES=()
+FLAG_OVERRIDE=0
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -36,31 +42,63 @@ while [[ $# -gt 0 ]]; do
       DRY_RUN=1
       shift
       ;;
+    -e|--exclude)
+      EXCLUDE_CATEGORIES+=("$2")
+      FLAG_OVERRIDE=1
+      shift 2
+      ;;
+    -o|--only)
+      ONLY_CATEGORIES+=("$2")
+      FLAG_OVERRIDE=1
+      shift 2
+      ;;
     -h|--help)
       cat <<EOF
-Config-based Installer
+Config-based Installer with Flag Overrides
 
 USAGE:
-  $(basename "$0") [OPTIONS]
+  $(basename "$0") [OPTIONS] [CATEGORIES...]
 
 OPTIONS:
-  -d, --dry-run    Show what would be installed without installing
-  -h, --help       Show this help message
+  -d, --dry-run          Show what would be installed without installing
+  -e, --exclude <cat>    Exclude category (overrides config, can repeat)
+  -o, --only <cat>       Only install category (overrides config, can repeat)
+  -h, --help             Show this help message
+
+CATEGORIES:
+  If specified without flags, only install these categories (overrides config).
+  Available: cli, langs, editors, shells, terminals, terminal-tools,
+             devops, build, shell-utils, ai, git, wm
 
 CONFIGURATION:
-  Edit sh/config.zsh to enable/disable categories and tools.
-  Set values to 1 (enabled) or 0 (disabled).
+  Config file (sh/config.zsh) sets defaults.
+  CLI flags override config settings.
+
+PRIORITY:
+  1. CLI flags (--exclude, --only, or category args)
+  2. Config file (config.zsh)
+  3. Default (install all)
 
 EXAMPLES:
-  $(basename "$0")              # Install based on config
-  $(basename "$0") --dry-run    # Preview installation
+  $(basename "$0")                        # Use config.zsh
+  $(basename "$0") cli langs              # Override: only cli and langs
+  $(basename "$0") --exclude docker       # Use config but skip docker
+  $(basename "$0") --only cli             # Override: only CLI tools
+  $(basename "$0") -e devops -e ai        # Exclude multiple categories
+  $(basename "$0") --dry-run cli          # Preview CLI installation
 
 EOF
       exit 0
       ;;
-    *)
+    -*)
       log_error "Unknown option: $1"
       exit 1
+      ;;
+    *)
+      # Category name
+      ONLY_CATEGORIES+=("$1")
+      FLAG_OVERRIDE=1
+      shift
       ;;
   esac
 done
@@ -90,10 +128,47 @@ if [[ "${INSTALL_CONFIG_LOADED:-0}" != "1" ]]; then
 fi
 
 log_success "Configuration loaded successfully"
+
+# Apply flag overrides
+if [[ $FLAG_OVERRIDE -eq 1 ]]; then
+  log_info "CLI flags detected - overriding config"
+  
+  # If --only or categories specified, override to install only those
+  if [[ ${#ONLY_CATEGORIES[@]} -gt 0 ]]; then
+    log_info "Only installing: ${ONLY_CATEGORIES[*]}"
+    
+    # Disable all categories first
+    for category in cli langs editors shells terminals terminal-tools devops build shell-utils ai git wm; do
+      cat_normalized=$(echo "$category" | tr '[:lower:]' '[:upper:]' | tr '-' '_')
+      var_name="INSTALL_CATEGORY_${cat_normalized}"
+      export "$var_name=0"
+    done
+    
+    # Enable only specified categories
+    for category in "${ONLY_CATEGORIES[@]}"; do
+      cat_normalized=$(echo "$category" | tr '[:lower:]' '[:upper:]' | tr '-' '_')
+      var_name="INSTALL_CATEGORY_${cat_normalized}"
+      export "$var_name=1"
+      log_info "  ✓ Enabled: $category"
+    done
+  fi
+  
+  # If --exclude specified, disable those categories
+  if [[ ${#EXCLUDE_CATEGORIES[@]} -gt 0 ]]; then
+    log_info "Excluding: ${EXCLUDE_CATEGORIES[*]}"
+    for category in "${EXCLUDE_CATEGORIES[@]}"; do
+      cat_normalized=$(echo "$category" | tr '[:lower:]' '[:upper:]' | tr '-' '_')
+      var_name="INSTALL_CATEGORY_${cat_normalized}"
+      export "$var_name=0"
+      log_info "  ✗ Disabled: $category"
+    done
+  fi
+fi
+
 echo ""
 
-# Determine which categories to install
-log_info "Enabled categories:"
+# Determine which categories to install (after flag overrides)
+log_info "Final installation plan:"
 categories_to_install=()
 
 for category in cli langs editors shells terminals terminal-tools devops build shell-utils ai git wm; do
@@ -111,7 +186,7 @@ done
 echo ""
 
 if [[ ${#categories_to_install[@]} -eq 0 ]]; then
-  log_warning "No categories enabled in config"
+  log_warning "No categories enabled"
   exit 0
 fi
 
