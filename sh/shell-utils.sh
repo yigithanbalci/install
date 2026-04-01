@@ -141,7 +141,13 @@ main() {
   )
   
   for util in "${utils[@]}"; do
-    "install_$util" || log_warning "Failed to install $util"
+    if confirm_install "$util" "shell-utils"; then
+      if "install_$util"; then
+        log_success "$util installed"
+      else
+        log_error "Failed to install $util"
+      fi
+    fi
   done
   
   log_success "Shell utilities installation complete!"

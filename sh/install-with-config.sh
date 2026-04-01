@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 #
 # Config-based installer with flag overrides
-# Loads config.zsh as defaults, CLI flags override config
+# Loads config.sh as defaults, CLI flags override config
 #
 # Usage:
-#   ./install-with-config.sh                    # Use config.zsh settings
+#   ./install-with-config.sh                    # Use config.sh settings
 #   ./install-with-config.sh cli langs          # Override: only install these
 #   ./install-with-config.sh --exclude docker   # Override: exclude docker
 #   ./install-with-config.sh --only cli         # Override: only CLI category
@@ -71,16 +71,16 @@ CATEGORIES:
              devops, build, shell-utils, ai, git, wm
 
 CONFIGURATION:
-  Config file (sh/config.zsh) sets defaults.
+  Config file (sh/config.sh) sets defaults.
   CLI flags override config settings.
 
 PRIORITY:
   1. CLI flags (--exclude, --only, or category args)
-  2. Config file (config.zsh)
+  2. Config file (config.sh)
   3. Default (install all)
 
 EXAMPLES:
-  $(basename "$0")                        # Use config.zsh
+  $(basename "$0")                        # Use config.sh
   $(basename "$0") cli langs              # Override: only cli and langs
   $(basename "$0") --exclude docker       # Use config but skip docker
   $(basename "$0") --only cli             # Override: only CLI tools
@@ -104,23 +104,24 @@ EOF
 done
 
 # Check if config exists
-CONFIG_FILE="$SCRIPT_DIR/config.zsh"
+CONFIG_FILE="$SCRIPT_DIR/config.sh"
 if [[ ! -f "$CONFIG_FILE" ]]; then
   log_error "Config file not found: $CONFIG_FILE"
-  log_info "Please create config.zsh first"
+  log_info "Please create config.sh first"
   exit 1
 fi
 
 log_info "Loading configuration from $CONFIG_FILE"
 
-# Source config using zsh
-if ! command -v zsh >/dev/null 2>&1; then
-  log_error "zsh is required to parse config.zsh"
+# Source config using bash (POSIX compliant)
+# shellcheck source=./config.sh
+if ! source "$CONFIG_FILE"; then
+  log_error "Failed to source config file"
   exit 1
 fi
 
-# Export config variables by running zsh script
-eval "$(zsh -c "source '$CONFIG_FILE' && export_config && env | grep '^INSTALL_'")"
+# Export config variables
+export_config
 
 if [[ "${INSTALL_CONFIG_LOADED:-0}" != "1" ]]; then
   log_error "Failed to load configuration"

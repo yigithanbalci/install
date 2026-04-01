@@ -109,7 +109,17 @@ main() {
   )
   
   for shell in "${shells[@]}"; do
-    "install_$shell" || log_warning "Failed to install $shell"
+    # Normalize shell name for config lookup
+    local shell_name
+    shell_name=$(echo "$shell" | tr '_' '-')
+    
+    if confirm_install "$shell_name" "shells"; then
+      if "install_$shell"; then
+        log_success "$shell_name installed"
+      else
+        log_error "Failed to install $shell_name"
+      fi
+    fi
   done
   
   log_success "Shell environments installation complete!"

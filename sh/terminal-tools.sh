@@ -203,7 +203,17 @@ main() {
   )
   
   for program in "${programs[@]}"; do
-    "install_$program" || log_warning "Failed to install $program"
+    # Normalize program name for config lookup
+    local prog_name
+    prog_name=$(echo "$program" | tr '_' '-')
+    
+    if confirm_install "$prog_name" "terminal-tools"; then
+      if "install_$program"; then
+        log_success "$prog_name installed"
+      else
+        log_error "Failed to install $prog_name"
+      fi
+    fi
   done
   
   log_success "Terminal programs installation complete!"

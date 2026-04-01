@@ -4,6 +4,8 @@ A modern, well-documented, and configurable installation system for Unix-based o
 
 ## Features
 
+- **POSIX Compliant**: Works on any Unix-like system with bash
+- **Config-Based Installation**: Save your preferences in `config.sh` for reproducible setups
 - **Platform-Agnostic Installers**: Uses official curl-based installers when available
 - **Configurable**: Install only what you need with flexible filtering
 - **Well-Documented**: Clear descriptions and help messages
@@ -14,6 +16,18 @@ A modern, well-documented, and configurable installation system for Unix-based o
 
 ## Quick Start
 
+### Option 1: Config-Based (Recommended)
+```bash
+# Edit config once to set your preferences
+nano sh/config.sh
+
+# Install based on config (no prompts!)
+./sh/install-with-config.sh
+
+# Benefits: Reproducible, shareable, version-controlled
+```
+
+### Option 2: Interactive Mode
 ```bash
 # Interactive mode - select categories
 ./sh/install.sh
@@ -47,6 +61,35 @@ A modern, well-documented, and configurable installation system for Unix-based o
 | **ai** | AI tools | GitHub Copilot CLI, Claude CLI, Ollama |
 
 ## Usage Examples
+
+### Config-Based Installation (Recommended)
+
+Save your preferences once and reuse them:
+
+```bash
+# 1. Edit config file
+nano sh/config.sh
+
+# Set tools to 1 (install) or 0 (skip)
+# Example:
+# INSTALL_CLI_RIPGREP=1
+# INSTALL_CLI_BAT=0
+# INSTALL_CATEGORY_DEVOPS=0
+
+# 2. Run installer (respects your config, no prompts!)
+./sh/install-with-config.sh
+
+# 3. Re-run anytime (skips already-installed tools)
+./sh/install-with-config.sh
+
+# Benefits:
+# - Reproducible setups
+# - No repetitive prompts
+# - Version controlled preferences
+# - Share config across machines
+```
+
+See [SYSTEM_EXPLAINED.md](../SYSTEM_EXPLAINED.md) for detailed config documentation.
 
 ### Interactive Installation
 ```bash
@@ -162,18 +205,20 @@ Options:
 
 ```
 sh/
-├── install.sh           # Main orchestrator
-├── common.sh            # Shared utilities
-├── cli.sh              # CLI tools
-├── langs.sh            # Programming languages
-├── editors.sh          # Text editors
-├── shells.sh           # Shell environments
-├── terminals.sh        # Terminal emulators
-├── terminal-tools.sh   # Terminal programs
-├── devops.sh           # DevOps tools
-├── build.sh            # Build tools
-├── shell-utils.sh      # Shell utilities
-└── ai.sh               # AI tools
+├── install.sh              # Main orchestrator (interactive)
+├── install-with-config.sh  # Config-based orchestrator (NEW)
+├── config.sh               # Configuration file (edit this!)
+├── common.sh               # Shared utilities
+├── cli.sh                  # CLI tools
+├── langs.sh                # Programming languages
+├── editors.sh              # Text editors
+├── shells.sh               # Shell environments
+├── terminals.sh            # Terminal emulators
+├── terminal-tools.sh       # Terminal programs
+├── devops.sh               # DevOps tools
+├── build.sh                # Build tools
+├── shell-utils.sh          # Shell utilities
+└── ai.sh                   # AI tools
 ```
 
 ## Comparison with Old System
@@ -186,6 +231,8 @@ sh/
 - Harder to maintain
 
 ### New System (`sh/`)
+- **Config-based mode** for reproducible setups
+- **POSIX compliant** - works everywhere
 - Grouped by category
 - Well-documented with help text
 - Dry-run support

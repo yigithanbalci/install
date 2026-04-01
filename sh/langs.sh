@@ -176,7 +176,17 @@ main() {
   )
   
   for lang in "${langs[@]}"; do
-    "install_$lang" || log_warning "Failed to install $lang"
+    # Normalize lang name for config lookup
+    local lang_name
+    lang_name=$(echo "$lang" | tr '_' '-')
+    
+    if confirm_install "$lang_name" "langs"; then
+      if "install_$lang"; then
+        log_success "$lang_name installed"
+      else
+        log_error "Failed to install $lang_name"
+      fi
+    fi
   done
   
   log_success "Programming languages installation complete!"

@@ -117,7 +117,13 @@ main() {
   )
   
   for terminal in "${terminals[@]}"; do
-    "install_$terminal" || log_warning "Failed to install $terminal"
+    if confirm_install "$terminal" "terminals"; then
+      if "install_$terminal"; then
+        log_success "$terminal installed"
+      else
+        log_error "Failed to install $terminal"
+      fi
+    fi
   done
   
   log_success "Terminal emulators installation complete!"

@@ -18,7 +18,8 @@ Your installation system has **3 modes** of operation:
 │     └─> Usage: INSTALL_NONINTERACTIVE=1 ./sh/install.sh     │
 │                                                              │
 │  3. CONFIG-BASED (NEW ✨)                                    │
-│     └─> Uses config.zsh to decide what to install           │
+│     └─> Uses config.sh to decide what to install            │
+│     └─> POSIX compliant bash for all systems                │
 │     └─> Usage: ./sh/install-with-config.sh                  │
 │                                                              │
 └─────────────────────────────────────────────────────────────┘
@@ -33,7 +34,7 @@ Your installation system has **3 modes** of operation:
 ```
 sh/
 ├── common.sh              ← Shared utilities (OS detection, pkg_install, confirm_install)
-├── config.zsh             ← YOUR CONFIG FILE (what to install)
+├── config.sh              ← YOUR CONFIG FILE (what to install) - POSIX bash
 ├── install.sh             ← Main orchestrator (interactive)
 ├── install-with-config.sh ← Config-based orchestrator (NEW)
 │
@@ -123,24 +124,21 @@ confirm_install() {
 
 ## **How Config System Works**
 
-### **1. You Edit `config.zsh`**
+### **1. You Edit `config.sh`**
 
-```zsh
-INSTALL_CATEGORIES=(
-  [cli]=1     # Enable entire CLI category
-  [git]=1     # Enable git category
-  [devops]=0  # Disable DevOps category
-)
+```bash
+# POSIX compliant bash configuration
+INSTALL_CATEGORY_CLI=1      # Enable entire CLI category
+INSTALL_CATEGORY_GIT=1      # Enable git category
+INSTALL_CATEGORY_DEVOPS=0   # Disable DevOps category
 
-CLI_TOOLS=(
-  [ripgrep]=1  # Install ripgrep
-  [bat]=0      # Don't install bat
-)
+# CLI Tools
+INSTALL_CLI_RIPGREP=1  # Install ripgrep
+INSTALL_CLI_BAT=0      # Don't install bat
 
-GIT_TOOLS=(
-  [gh]=1       # Install GitHub CLI
-  [glab]=1     # Install GitLab CLI
-)
+# Git Tools
+INSTALL_GIT_GH=1       # Install GitHub CLI
+INSTALL_GIT_GLAB=1     # Install GitLab CLI
 ```
 
 ### **2. Config Gets Exported as Environment Variables**
@@ -148,8 +146,8 @@ GIT_TOOLS=(
 When you run `./sh/install-with-config.sh`, it does:
 
 ```bash
-# Load config
-source config.zsh
+# Load config (POSIX bash)
+source config.sh
 export_config  # Exports as INSTALL_CATEGORY_CLI=1, INSTALL_CLI_RIPGREP=1, etc.
 
 # Set flag
@@ -222,9 +220,9 @@ Install sesh? (Y/n) y
 ### **After (Config Mode)**
 
 ```bash
-# Edit config once
-$ nano sh/config.zsh
-# Set CLI_TOOLS=([ripgrep]=1 [fzf]=1 [bat]=0 ...)
+# Edit config once (POSIX bash)
+$ nano sh/config.sh
+# Set INSTALL_CLI_RIPGREP=1, INSTALL_CLI_BAT=0, etc.
 
 $ ./sh/install-with-config.sh
 ✓ Configuration loaded
@@ -256,7 +254,7 @@ git clone <repo>
 cd install/sh
 
 # Edit config for your preferences
-nano config.zsh
+nano config.sh
 
 # Preview what will install
 ./install-with-config.sh --dry-run
@@ -269,8 +267,8 @@ nano config.zsh
 
 ```bash
 # Edit config (add new tool)
-nano config.zsh
-# Set: CLI_TOOLS=([newtool]=1 ...)
+nano config.sh
+# Set: INSTALL_CLI_NEWTOOL=1
 
 # Re-run (skips already-installed tools)
 ./install-with-config.sh
@@ -280,7 +278,7 @@ nano config.zsh
 
 ```bash
 # Copy config from old machine
-scp oldmachine:~/devenv/install/sh/config.zsh ./sh/
+scp oldmachine:~/devenv/install/sh/config.sh ./sh/
 
 # Run on new machine
 ./sh/install-with-config.sh
@@ -292,15 +290,15 @@ scp oldmachine:~/devenv/install/sh/config.zsh ./sh/
 
 ```bash
 # Keep two configs
-cp config.zsh config-work.zsh
-cp config.zsh config-personal.zsh
+cp config.sh config-work.sh
+cp config.sh config-personal.sh
 
 # Edit each differently
-nano config-work.zsh     # Disable personal tools
-nano config-personal.zsh # Enable everything
+nano config-work.sh     # Disable personal tools
+nano config-personal.sh # Enable everything
 
 # Use appropriate one
-ln -sf config-work.zsh config.zsh
+ln -sf config-work.sh config.sh
 ./install-with-config.sh
 ```
 
@@ -318,7 +316,7 @@ install/
 │
 ├── sh/                        ← New system (recommended)
 │   ├── common.sh              ← Utilities (OS detect, install, confirm)
-│   ├── config.zsh             ← YOUR CONFIG FILE ⭐
+│   ├── config.sh              ← YOUR CONFIG FILE ⭐ (POSIX bash)
 │   │
 │   ├── install.sh             ← Main orchestrator (interactive)
 │   ├── install-with-config.sh ← Config orchestrator (NEW)
@@ -373,12 +371,12 @@ install/
 
 1. **Old Way**: Each script prompts Y/n for every tool
 2. **Problem**: Can't save preferences, tedious to repeat
-3. **Solution**: Config file (`config.zsh`) stores what you want
+3. **Solution**: Config file (`config.sh`) stores what you want in POSIX bash
 4. **How It Works**: 
-   - Edit `config.zsh` once
+   - Edit `config.sh` once
    - Run `./install-with-config.sh`
    - Scripts read config automatically via environment variables
    - No prompts, installs only enabled tools
-5. **Benefits**: Reproducible, fast, shareable, version-controlled
+5. **Benefits**: Reproducible, fast, shareable, version-controlled, POSIX compliant
 
-**Bottom line**: Edit `config.zsh`, run installer, done! 🎉
+**Bottom line**: Edit `config.sh`, run installer, works on any OS! 🎉

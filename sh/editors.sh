@@ -114,10 +114,17 @@ main() {
     "neovim"
     "emacs"
     "zed"
+    "helix"
   )
   
   for editor in "${editors[@]}"; do
-    "install_$editor" || log_warning "Failed to install $editor"
+    if confirm_install "$editor" "editors"; then
+      if "install_$editor"; then
+        log_success "$editor installed"
+      else
+        log_error "Failed to install $editor"
+      fi
+    fi
   done
   
   log_success "Text editors installation complete!"

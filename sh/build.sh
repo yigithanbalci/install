@@ -93,7 +93,13 @@ main() {
   )
   
   for tool in "${tools[@]}"; do
-    "install_$tool" || log_warning "Failed to install $tool"
+    if confirm_install "$tool" "build"; then
+      if "install_$tool"; then
+        log_success "$tool installed"
+      else
+        log_error "Failed to install $tool"
+      fi
+    fi
   done
   
   log_success "Build tools installation complete!"

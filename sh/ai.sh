@@ -127,7 +127,17 @@ main() {
   )
   
   for tool in "${tools[@]}"; do
-    "install_$tool" || log_warning "Failed to install $tool"
+    # Extract normalized tool name for config lookup
+    local tool_name
+    tool_name=$(echo "$tool" | sed 's/_cli$//' | tr '_' '-')
+    
+    if confirm_install "$tool_name" "ai"; then
+      if "install_$tool"; then
+        log_success "$tool_name installed"
+      else
+        log_error "Failed to install $tool_name"
+      fi
+    fi
   done
   
   log_success "AI tools installation complete!"
