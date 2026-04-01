@@ -18,3 +18,5 @@ See [unix/README.md](unix/README.md) for detailed documentation.
 
 TODO: windows support?
 
+TODO: check unix scripts
+
