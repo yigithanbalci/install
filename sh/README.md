@@ -18,11 +18,12 @@ A modern, well-documented, and configurable installation system for Unix-based o
 
 ### Option 1: Config-Based (Recommended)
 ```bash
+# From repository root
 # Edit config once to set your preferences
 nano sh/config.sh
 
 # Install based on config (no prompts!)
-./sh/install-with-config.sh
+./unix.sh --use-config
 
 # Benefits: Reproducible, shareable, version-controlled
 ```
@@ -30,19 +31,32 @@ nano sh/config.sh
 ### Option 2: Interactive Mode
 ```bash
 # Interactive mode - select categories
+./unix.sh
+
+# Or from sh/ directory
 ./sh/install.sh
 
 # Install specific categories
-./sh/install.sh cli langs editors
+./unix.sh cli langs editors
 
 # Install everything
-./sh/install.sh --all
+./unix.sh --all
 
 # Exclude specific tools
-./sh/install.sh --all -e docker -e kubernetes
+./unix.sh --all -e docker -e kubernetes
 
 # Preview what would be installed
-./sh/install.sh --dry-run cli
+./unix.sh --dry-run cli
+```
+
+### Option 3: Use from sh/ directory
+```bash
+cd sh/
+
+# All modes work the same
+./install.sh --use-config      # Config mode
+./install.sh                   # Interactive
+./install.sh cli langs         # Specific categories
 ```
 
 ## Available Categories
@@ -67,6 +81,7 @@ nano sh/config.sh
 Save your preferences once and reuse them:
 
 ```bash
+# From repository root
 # 1. Edit config file
 nano sh/config.sh
 
@@ -77,10 +92,13 @@ nano sh/config.sh
 # INSTALL_CATEGORY_DEVOPS=0
 
 # 2. Run installer (respects your config, no prompts!)
-./sh/install-with-config.sh
+./unix.sh --use-config
+
+# Or from sh/ directory
+./sh/install.sh --use-config
 
 # 3. Re-run anytime (skips already-installed tools)
-./sh/install-with-config.sh
+./unix.sh --use-config
 
 # Benefits:
 # - Reproducible setups
@@ -205,8 +223,7 @@ Options:
 
 ```
 sh/
-├── install.sh              # Main orchestrator (interactive)
-├── install-with-config.sh  # Config-based orchestrator (NEW)
+├── install.sh              # UNIFIED installer (handles all 3 modes)
 ├── config.sh               # Configuration file (edit this!)
 ├── common.sh               # Shared utilities
 ├── cli.sh                  # CLI tools
@@ -218,7 +235,10 @@ sh/
 ├── devops.sh               # DevOps tools
 ├── build.sh                # Build tools
 ├── shell-utils.sh          # Shell utilities
-└── ai.sh                   # AI tools
+├── ai.sh                   # AI tools
+├── git.sh                  # Git tools
+├── wm.sh                   # Window managers
+└── install-with-config.sh  # DEPRECATED (redirects to install.sh --use-config)
 ```
 
 ## Comparison with Old System

@@ -1,22 +1,18 @@
 #!/usr/bin/env bash
 #
-# DEPRECATED: This script is deprecated and kept only for backward compatibility.
-# Please use: ./install.sh --use-config
+# Config-based installer with flag overrides
+# Loads config.sh as defaults, CLI flags override config
 #
-# This script now redirects to the unified install.sh with --use-config flag.
+# Usage:
+#   ./install-with-config.sh                    # Use config.sh settings
+#   ./install-with-config.sh cli langs          # Override: only install these
+#   ./install-with-config.sh --exclude docker   # Override: exclude docker
+#   ./install-with-config.sh --only cli         # Override: only CLI category
+#   ./install-with-config.sh --dry-run          # Preview
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-echo "⚠️  DEPRECATED: install-with-config.sh is deprecated"
-echo "ℹ️  Please use: ./install.sh --use-config"
-echo ""
-echo "Redirecting to unified installer..."
-echo ""
-
-# Redirect to unified installer with --use-config flag
-exec "$SCRIPT_DIR/install.sh" --use-config "$@"
 
 # Color output
 if [[ -t 1 ]]; then
