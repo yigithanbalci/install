@@ -50,7 +50,7 @@ INSTALL_CLI_TELEVISION=1
 INSTALL_CLI_SESH=1
 INSTALL_CLI_AWK=1
 INSTALL_CLI_CURL=1
-INSTALL_CLI_WORKTRUNK=0  # Requires Go
+INSTALL_CLI_WORKTRUNK=0 # Requires Go
 
 # =============================================================================
 # PROGRAMMING LANGUAGES
@@ -149,17 +149,17 @@ INSTALL_AI_AIDER=0
 # GIT TOOLS
 # =============================================================================
 
-INSTALL_GIT_GH=1        # GitHub CLI
-INSTALL_GIT_GLAB=1      # GitLab CLI
+INSTALL_GIT_GH=1   # GitHub CLI
+INSTALL_GIT_GLAB=1 # GitLab CLI
 
 # =============================================================================
 # WINDOW MANAGERS
 # =============================================================================
 
-INSTALL_WM_AEROSPACE=1      # macOS tiling WM
-INSTALL_WM_YABAI=0          # macOS tiling WM (alternative)
-INSTALL_WM_SKHD=0           # macOS hotkey daemon
-INSTALL_WM_HYPRLAND=1       # Linux (Arch) - components only
+INSTALL_WM_AEROSPACE=1 # macOS tiling WM
+INSTALL_WM_YABAI=0     # macOS tiling WM (alternative)
+INSTALL_WM_SKHD=0      # macOS hotkey daemon
+INSTALL_WM_HYPRLAND=1  # Linux (Arch) - components only
 
 # =============================================================================
 # HELPER FUNCTIONS
@@ -171,7 +171,7 @@ is_category_enabled() {
   local cat_normalized
   cat_normalized=$(echo "$category" | tr '[:lower:]' '[:upper:]' | tr '-' '_')
   local var_name="INSTALL_CATEGORY_${cat_normalized}"
-  
+
   # Use indirect expansion if available, fallback to eval for POSIX
   local value
   if [ -n "${!var_name+x}" ] 2>/dev/null; then
@@ -179,7 +179,7 @@ is_category_enabled() {
   else
     value=$(eval "echo \"\$${var_name}\"")
   fi
-  
+
   [ "${value:-0}" = "1" ]
 }
 
@@ -187,19 +187,19 @@ is_category_enabled() {
 is_tool_enabled() {
   local category="$1"
   local tool="$2"
-  
+
   # First check if category is enabled
   if ! is_category_enabled "$category"; then
     return 1
   fi
-  
+
   # Then check tool-specific setting
   local cat_normalized
   cat_normalized=$(echo "$category" | tr '[:lower:]' '[:upper:]' | tr '-' '_')
   local tool_normalized
   tool_normalized=$(echo "$tool" | tr '[:lower:]' '[:upper:]' | tr '-' '_')
   local var_name="INSTALL_${cat_normalized}_${tool_normalized}"
-  
+
   # Use indirect expansion if available, fallback to eval for POSIX
   local value
   if [ -n "${!var_name+x}" ] 2>/dev/null; then
@@ -207,7 +207,7 @@ is_tool_enabled() {
   else
     value=$(eval "echo \"\$${var_name}\"")
   fi
-  
+
   [ "${value:-0}" = "1" ]
 }
 
@@ -226,7 +226,7 @@ export_config() {
   export INSTALL_CATEGORY_AI
   export INSTALL_CATEGORY_GIT
   export INSTALL_CATEGORY_WM
-  
+
   # Export CLI tools
   export INSTALL_CLI_RIPGREP
   export INSTALL_CLI_FZF
@@ -245,7 +245,7 @@ export_config() {
   export INSTALL_CLI_AWK
   export INSTALL_CLI_CURL
   export INSTALL_CLI_WORKTRUNK
-  
+
   # Export languages
   export INSTALL_LANG_RUST
   export INSTALL_LANG_GO
@@ -258,33 +258,33 @@ export_config() {
   export INSTALL_LANG_ZIG
   export INSTALL_LANG_BUN
   export INSTALL_LANG_DENO
-  
+
   # Export editors
   export INSTALL_EDITOR_NEOVIM
   export INSTALL_EDITOR_EMACS
   export INSTALL_EDITOR_ZED
   export INSTALL_EDITOR_HELIX
-  
+
   # Export shells
   export INSTALL_SHELL_FISH
   export INSTALL_SHELL_ZSH
   export INSTALL_SHELL_BASH
   export INSTALL_SHELL_NUSHELL
-  
+
   # Export terminals
   export INSTALL_TERMINAL_WEZTERM
   export INSTALL_TERMINAL_KITTY
   export INSTALL_TERMINAL_GHOSTTY
   export INSTALL_TERMINAL_ALACRITTY
   export INSTALL_TERMINAL_ITERM2
-  
+
   # Export terminal tools
   export INSTALL_TERMINAL_TOOL_TMUX
   export INSTALL_TERMINAL_TOOL_YAZI
   export INSTALL_TERMINAL_TOOL_LAZYDOCKER
   export INSTALL_TERMINAL_TOOL_BTOP
   export INSTALL_TERMINAL_TOOL_HTOP
-  
+
   # Export devops tools
   export INSTALL_DEVOPS_DOCKER
   export INSTALL_DEVOPS_COLIMA
@@ -293,35 +293,35 @@ export_config() {
   export INSTALL_DEVOPS_K9S
   export INSTALL_DEVOPS_TERRAFORM
   export INSTALL_DEVOPS_ANSIBLE
-  
+
   # Export build tools
   export INSTALL_BUILD_CMAKE
   export INSTALL_BUILD_MAKE
   export INSTALL_BUILD_NINJA
   export INSTALL_BUILD_MESON
-  
+
   # Export shell utilities
   export INSTALL_SHELL_UTIL_DIRENV
   export INSTALL_SHELL_UTIL_DOPPLER
   export INSTALL_SHELL_UTIL_FASTFETCH
   export INSTALL_SHELL_UTIL_NEOFETCH
   export INSTALL_SHELL_UTIL_STARSHIP
-  
+
   # Export AI tools
   export INSTALL_AI_COPILOT_CLI
   export INSTALL_AI_CLAUDE_CLI
   export INSTALL_AI_AIDER
-  
+
   # Export git tools
   export INSTALL_GIT_GH
   export INSTALL_GIT_GLAB
-  
+
   # Export window managers
   export INSTALL_WM_AEROSPACE
   export INSTALL_WM_YABAI
   export INSTALL_WM_SKHD
   export INSTALL_WM_HYPRLAND
-  
+
   # Signal that config is loaded
   export INSTALL_CONFIG_LOADED=1
 }
