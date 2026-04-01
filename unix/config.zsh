@@ -6,7 +6,7 @@
 # Usage:
 #   1. Set ENABLED=1 for categories/tools you want
 #   2. Set ENABLED=0 for categories/tools you don't want
-#   3. Run: ./sh/install.sh --config
+#   3. Run: ./unix/install.sh --config
 #
 # The installer will read this config and only install enabled items
 

@@ -3,7 +3,7 @@
 # Unix Installation Entry Point
 # Single entry point for all Unix-based installation operations
 #
-# This script delegates to the actual installer in sh/install.sh,
+# This script delegates to the actual installer in unix/install.sh,
 # passing through all arguments unchanged.
 #
 # Usage:
@@ -13,13 +13,13 @@
 #   ./unix.sh --use-config -e devops       # Config mode with overrides
 #   ./unix.sh --help                       # Show help
 #
-# See sh/install.sh for full documentation
+# See unix/install.sh for full documentation
 
 set -euo pipefail
 
 # Detect script directory
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-INSTALLER="$REPO_ROOT/sh/install.sh"
+INSTALLER="$REPO_ROOT/unix/install.sh"
 
 # Check if installer exists
 if [[ ! -f "$INSTALLER" ]]; then
