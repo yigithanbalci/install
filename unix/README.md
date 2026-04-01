@@ -1,307 +1,255 @@
-# Modern Unix Installation Scripts
+# Unix Installation System
 
-A modern, well-documented, and configurable installation system for Unix-based operating systems (macOS, Ubuntu, Arch Linux, etc.).
-
-## Features
-
-- **POSIX Compliant**: Works on any Unix-like system with bash
-- **Config-Based Installation**: Save your preferences in `config.sh` for reproducible setups
-- **Platform-Agnostic Installers**: Uses official curl-based installers when available
-- **Configurable**: Install only what you need with flexible filtering
-- **Well-Documented**: Clear descriptions and help messages
-- **Interactive & Non-Interactive**: Supports both modes
-- **Modular**: Organized by category for easy maintenance
-- **Smart**: Detects OS and uses appropriate package managers
-- **Safe**: Dry-run mode to preview changes
+A unified, POSIX-compliant installation system for development tools on Unix-based operating systems (macOS, Ubuntu, Arch Linux, etc.).
 
 ## Quick Start
 
-### Option 1: Config-Based (Recommended)
 ```bash
 # From repository root
-# Edit config once to set your preferences
-nano sh/config.sh
-
-# Install based on config (no prompts!)
-./unix.sh --use-config
-
-# Benefits: Reproducible, shareable, version-controlled
+./unix.sh                    # Interactive mode
+./unix.sh --use-config       # Config-based (uses unix/config.sh)
+./unix.sh cli langs          # Install specific categories
+./unix.sh --help             # Show all options
 ```
 
-### Option 2: Interactive Mode
+## Three Installation Modes
+
+### 1. Config Mode (Recommended for Automation)
+Uses `unix/config.sh` to decide what to install. No prompts during installation.
+
 ```bash
-# Interactive mode - select categories
+# Edit configuration
+nano unix/config.sh
+
+# Run installer
+./unix.sh --use-config
+
+# With overrides
+./unix.sh --use-config --exclude devops
+./unix.sh --use-config --only cli
+```
+
+**Benefits:** Reproducible, version-controlled, shareable across machines.
+
+### 2. Interactive Mode (Default)
+Prompts you to select categories and tools interactively.
+
+```bash
+# Run without arguments
 ./unix.sh
 
-# Or from sh/ directory
-./sh/install.sh
+# Will prompt for:
+# 1. Which categories to install
+# 2. Which tools within each category
+```
 
+**Benefits:** Good for exploration and first-time setup.
+
+### 3. CLI Arguments Mode
+Install specific categories directly from command line.
+
+```bash
 # Install specific categories
 ./unix.sh cli langs editors
 
 # Install everything
 ./unix.sh --all
 
-# Exclude specific tools
-./unix.sh --all -e docker -e kubernetes
+# Exclude specific categories
+./unix.sh --all --exclude devops --exclude docker
 
-# Preview what would be installed
-./unix.sh --dry-run cli
+# Preview (dry-run)
+./unix.sh --dry-run cli langs
 ```
 
-### Option 3: Use from sh/ directory
-```bash
-cd sh/
-
-# All modes work the same
-./install.sh --use-config      # Config mode
-./install.sh                   # Interactive
-./install.sh cli langs         # Specific categories
-```
+**Benefits:** Quick, scriptable, no config file needed.
 
 ## Available Categories
 
-| Category | Description | Key Tools |
-|----------|-------------|-----------|
-| **cli** | Modern CLI tools | ripgrep, fzf, fd, bat, eza, jq, zoxide, atuin |
-| **langs** | Programming languages | Rust, Go, Node.js (nvm), Python, Zig, GCC, LLVM |
-| **editors** | Text editors | Neovim, Emacs, Zed |
-| **shells** | Shell environments | Fish, Zsh, Oh My Zsh, Starship |
-| **terminals** | Terminal emulators | WezTerm, Kitty, Ghostty, Alacritty |
-| **terminal-tools** | Terminal programs | tmux, lazygit, lazydocker, yazi, gh-dash |
-| **devops** | DevOps tools | Docker, Kubernetes, Colima, Helm, k9s |
-| **build** | Build tools | CMake, Make, Ninja, Meson |
-| **shell-utils** | Shell utilities | direnv, doppler, fastfetch, pass |
-| **ai** | AI tools | GitHub Copilot CLI, Claude CLI, Ollama |
+| Category | Tools Included |
+|----------|---------------|
+| **cli** | Modern CLI tools: ripgrep, fzf, fd, bat, eza, jq, zoxide, atuin, tldr, stow, tree-sitter, lazygit, television, sesh |
+| **langs** | Programming languages: Rust, Go, Node.js (via nvm), Zig, Python, GCC, G++, LLVM |
+| **editors** | Text editors: Neovim, Emacs, Zed, Helix |
+| **shells** | Shell environments: Fish, Zsh, Oh My Zsh, Starship |
+| **terminals** | Terminal emulators: WezTerm, Kitty, Ghostty, Alacritty |
+| **terminal-tools** | Terminal programs: tmux, lazygit, lazydocker, yazi, gh-dash, gtop, carapace |
+| **devops** | DevOps tools: Docker, Docker Compose, Colima, kubectl, Helm, k9s |
+| **build** | Build tools: CMake, Make, Ninja, Meson |
+| **shell-utils** | Shell utilities: direnv, doppler, fastfetch, pass, neofetch, thefuck |
+| **ai** | AI tools: GitHub Copilot CLI, Claude CLI, aichat, Ollama |
+| **git** | Git tools: GitHub CLI (gh), GitLab CLI (glab) |
+| **wm** | Window managers: AeroSpace (macOS), Yabai (macOS), Hyprland (Linux) |
 
-## Usage Examples
+## All Options
 
-### Config-Based Installation (Recommended)
+```
+-h, --help           Show help message
+-l, --list          List all available categories
+-c, --use-config    Use config.sh for all installation decisions
+-a, --all           Install all categories
+-e, --exclude       Exclude categories (repeatable)
+-o, --only          Only install specified categories (config mode)
+-d, --dry-run       Preview without installing
+-i, --interactive   Force interactive mode
+-y, --yes           Skip all prompts (non-interactive)
+```
 
-Save your preferences once and reuse them:
+## Configuration File
+
+Edit `unix/config.sh` to customize your installation:
 
 ```bash
-# From repository root
-# 1. Edit config file
-nano sh/config.sh
+# Enable/disable entire categories
+INSTALL_CATEGORY_CLI=1           # 1 = install, 0 = skip
+INSTALL_CATEGORY_DEVOPS=0        # Skip DevOps tools
 
-# Set tools to 1 (install) or 0 (skip)
-# Example:
-# INSTALL_CLI_RIPGREP=1
-# INSTALL_CLI_BAT=0
-# INSTALL_CATEGORY_DEVOPS=0
+# Enable/disable individual tools
+INSTALL_CLI_RIPGREP=1            # Install ripgrep
+INSTALL_CLI_BAT=0                # Skip bat
+INSTALL_LANG_RUST=1              # Install Rust
+INSTALL_EDITOR_NEOVIM=1          # Install Neovim
+```
 
-# 2. Run installer (respects your config, no prompts!)
+**Naming convention:**
+- Categories: `INSTALL_CATEGORY_<NAME>` (uppercase, underscores for hyphens)
+- Tools: `INSTALL_<CATEGORY>_<TOOL>` (uppercase, underscores for hyphens)
+
+## Common Use Cases
+
+### New Machine Setup
+```bash
+# 1. Copy config from another machine
+scp oldmachine:~/devenv/install/unix/config.sh ./unix/
+
+# 2. Install everything
 ./unix.sh --use-config
+```
 
-# Or from sh/ directory
-./sh/install.sh --use-config
+### Development Environment
+```bash
+# Quick dev setup
+./unix.sh cli langs editors git
 
-# 3. Re-run anytime (skips already-installed tools)
+# Or with config for repeatability
 ./unix.sh --use-config
-
-# Benefits:
-# - Reproducible setups
-# - No repetitive prompts
-# - Version controlled preferences
-# - Share config across machines
 ```
 
-See [SYSTEM_EXPLAINED.md](../SYSTEM_EXPLAINED.md) for detailed config documentation.
-
-### Interactive Installation
+### CI/CD / Automation
 ```bash
-# Run without arguments to get an interactive prompt
-./sh/install.sh
-```
-
-### Install Specific Categories
-```bash
-# Install CLI tools and programming languages
-./sh/install.sh cli langs
-
-# Install just editors
-./sh/install.sh editors
-```
-
-### Install Everything
-```bash
-# Install all categories
-./sh/install.sh --all
-```
-
-### Exclude Specific Tools
-```bash
-# Install everything except Docker and Kubernetes
-./sh/install.sh --all --exclude docker --exclude kubernetes
-
-# Multiple excludes
-./sh/install.sh -e docker -e rust -e emacs
-```
-
-### Dry Run (Preview)
-```bash
-# See what would be installed without actually installing
-./sh/install.sh --dry-run cli langs
-
-# Preview full installation
-./sh/install.sh --dry-run --all
-```
-
-### Non-Interactive Mode
-```bash
-# Skip all prompts (useful for CI/CD)
+# Non-interactive mode
 export INSTALL_NONINTERACTIVE=1
-./sh/install.sh cli langs
+./unix.sh --use-config
 
-# Or use the flag
-./sh/install.sh --yes cli langs
+# Or use -y flag
+./unix.sh --yes cli build
 ```
 
-## Installation Methods
-
-The scripts prefer platform-agnostic installation methods when available:
-
-### Official Installers (curl-based)
-Many tools provide official installers that work across platforms:
-- **Rust**: `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`
-- **NVM**: `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash`
-- **Zoxide**: `curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh`
-- **Ollama**: `curl -fsSL https://ollama.com/install.sh | sh`
-
-### Package Managers
-Falls back to native package managers:
-- **macOS**: Homebrew
-- **Ubuntu/Debian**: apt
-- **Arch Linux**: pacman
-- **Fedora**: dnf
-
-## Individual Category Scripts
-
-You can also run category scripts directly:
-
+### Preview Before Installing
 ```bash
-# Install just CLI tools
-./sh/cli.sh
+# See what config would install
+./unix.sh --dry-run --use-config
 
-# Install programming languages
-./sh/langs.sh
-
-# Install editors
-./sh/editors.sh
+# See what categories would install
+./unix.sh --dry-run cli langs
 ```
 
-Each script sources `common.sh` which provides shared utilities like OS detection, logging, and installation helpers.
+## How It Works
 
-## Environment Variables
+See [STRUCTURE.md](STRUCTURE.md) for detailed technical documentation on:
+- System architecture
+- Script organization
+- Installation flow
+- Configuration system
+- Adding new tools
 
-- `DEV_ENV` - Path to devenv repository (auto-detected)
-- `INSTALL_NONINTERACTIVE=1` - Skip all prompts
+## Platform Support
 
-## Command-Line Options
+- **macOS** (10.15+) - Uses Homebrew, official installers
+- **Ubuntu/Debian** (20.04+) - Uses apt, official installers
+- **Arch Linux** - Uses pacman, official installers
+- **Other Linux** - Falls back to platform-agnostic curl installers
 
-```
-Options:
-  -h, --help           Show help message
-  -l, --list          List all available categories
-  -a, --all           Install all categories
-  -e, --exclude       Exclude categories/scripts (can be used multiple times)
-  -d, --dry-run       Preview installation without making changes
-  -i, --interactive   Enable interactive mode (default)
-  -y, --yes           Non-interactive mode, use defaults
-```
+All scripts are POSIX-compliant bash and work on bare minimum terminal installations.
 
-## Supported Operating Systems
+## Examples
 
-- **macOS** (tested on macOS 10.15+)
-- **Ubuntu** (20.04, 22.04, 24.04)
-- **Debian** (via Ubuntu scripts)
-- **Arch Linux** (and derivatives like Manjaro)
-- Other Linux distributions may work with platform-agnostic installers
-
-## Architecture
-
-```
-sh/
-├── install.sh              # UNIFIED installer (handles all 3 modes)
-├── config.sh               # Configuration file (edit this!)
-├── common.sh               # Shared utilities
-├── cli.sh                  # CLI tools
-├── langs.sh                # Programming languages
-├── editors.sh              # Text editors
-├── shells.sh               # Shell environments
-├── terminals.sh            # Terminal emulators
-├── terminal-tools.sh       # Terminal programs
-├── devops.sh               # DevOps tools
-├── build.sh                # Build tools
-├── shell-utils.sh          # Shell utilities
-├── ai.sh                   # AI tools
-├── git.sh                  # Git tools
-├── wm.sh                   # Window managers
-└── install-with-config.sh  # DEPRECATED (redirects to install.sh --use-config)
-```
-
-## Comparison with Old System
-
-### Old System (`install` + `installs/`)
-- One file per tool
-- Less documented
-- No dry-run mode
-- Basic filtering
-- Harder to maintain
-
-### New System (`sh/`)
-- **Config-based mode** for reproducible setups
-- **POSIX compliant** - works everywhere
-- Grouped by category
-- Well-documented with help text
-- Dry-run support
-- Flexible filtering (include/exclude)
-- Interactive mode
-- Platform-agnostic installers preferred
-- Consistent logging and error handling
-- Easy to extend
-
-## Adding New Tools
-
-To add a new tool, edit the appropriate category script:
-
+### Example 1: Minimal Developer Setup
 ```bash
-install_newtool() {
-  if is_installed newtool; then return 0; fi
-  if ! confirm_install "newtool"; then return 0; fi
-  
-  case "$OS" in
-    macos) pkg_install newtool ;;
-    ubuntu|arch) pkg_install newtool ;;
-    *)
-      # Platform-agnostic method
-      curl -fsSL https://example.com/install.sh | bash
-      ;;
-  esac
-  
-  log_success "newtool installed"
-}
-
-# Add to main() function
-tools_to_install+=(
-  "newtool"
-)
+./unix.sh cli langs editors git
 ```
 
-## Contributing
+### Example 2: Full Stack Developer
+```bash
+# Edit config.sh to enable all categories
+nano unix/config.sh
 
-Feel free to add more tools or improve installation methods:
+# Install based on config
+./unix.sh --use-config
+```
 
-1. Prefer official curl-based installers when available
-2. Add OS detection for platform-specific packages
-3. Include helpful post-installation messages
-4. Test on multiple platforms
+### Example 3: System Administrator
+```bash
+./unix.sh cli terminal-tools devops
+```
 
-## License
+### Example 4: Config with Overrides
+```bash
+# Use config but exclude heavy tools
+./unix.sh --use-config --exclude devops
 
-MIT
+# Use config but only install CLI tools
+./unix.sh --use-config --only cli
+```
 
-## Credits
+## Safety Features
 
-Built to modernize and improve upon the original `install` and `installs/` system.
+- **Dry-run mode**: Preview installations with `--dry-run`
+- **Skip installed**: Already-installed tools are automatically skipped
+- **Confirmation prompts**: Asks before installing (unless `-y` or config mode)
+- **Category filtering**: Install only what you need
+- **Override support**: CLI flags override config settings
+
+## Troubleshooting
+
+### List Available Categories
+```bash
+./unix.sh --list
+```
+
+### Check Configuration
+```bash
+# Verify config syntax
+bash -n unix/config.sh
+
+# Test config loading
+source unix/config.sh && echo "Config: $INSTALL_CONFIG_LOADED"
+```
+
+### Preview Installation
+```bash
+# Always safe to dry-run first
+./unix.sh --dry-run --use-config
+```
+
+### Get Help
+```bash
+./unix.sh --help
+```
+
+## Entry Points
+
+- **`./unix.sh`** (repository root) - Main entry point, delegates to unix/install.sh
+- **`unix/install.sh`** - Actual installer, can be called directly from unix/ directory
+
+Both accept the same arguments and options.
+
+## See Also
+
+- [STRUCTURE.md](STRUCTURE.md) - Technical documentation and architecture
+- [config.sh](config.sh) - Configuration file (edit this to customize)
+- [common.sh](common.sh) - Shared utilities used by all scripts
+
+---
+
+**Status:** Production-ready, POSIX-compliant, tested on macOS, Ubuntu, and Arch Linux.
